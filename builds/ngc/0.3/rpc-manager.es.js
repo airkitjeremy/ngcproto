@@ -14,6 +14,7 @@ class f {
       callTimeout: e.callTimeout ?? t,
       isHost: e.isHost ?? !1,
       targetOrigin: e.targetOrigin ?? "*",
+      targetFrameId: e.targetFrameId,
       onError: e.onError
     }, this.handleMessage = this.handleMessage.bind(this), this.onError = e.onError, this.options.targetOrigin === "*" && console.warn(
       "[RPC] Warning: targetOrigin is set to '*', which allows all origins. This is not recommended for production environments."
@@ -139,8 +140,10 @@ class f {
     };
     let n, s;
     if (this.options.isHost) {
-      const i = window.frames[0];
-      i && i !== window ? (n = i, s = "iframe") : (n = window, s = "same-window");
+      let i = window.frames[0];
+      this.options.targetFrameId && (i = document.getElementById(
+        this.options.targetFrameId
+      )?.contentWindow ?? void 0), i && i !== window ? (n = i, s = "iframe") : (n = window, s = "same-window");
     } else
       window.parent && window.parent !== window ? (n = window.parent, s = "parent-window") : (n = window, s = "same-window");
     const o = this.options.targetOrigin ?? "*";
