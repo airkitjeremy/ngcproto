@@ -1,10 +1,10 @@
 {
-  "version": "0.3.201",
+  "version": "0.3.202",
   "minimum_bootstrap_versions": [
     "254.12",
     "256.0"
   ],
-  "build_date": "2025-08-08T17:41:26.340Z",
+  "build_date": "2025-08-15T19:34:22.923Z",
   "entry_point": "index.js",
   "css_file": "index.css",
   "rpc_manager": [
