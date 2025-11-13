@@ -1,19 +1,26 @@
-var m = /* @__PURE__ */ ((a) => (a.HostNotConnected = "HostNotConnected", a.Timeout = "Timeout", a.NoHandler = "NoHandler", a.HandlerError = "HandlerError", a.Unknown = "Unknown", a))(m || {});
+var C = /* @__PURE__ */ ((a) => (a.HostNotConnected = "HostNotConnected", a.Timeout = "Timeout", a.NoHandler = "NoHandler", a.HandlerError = "HandlerError", a.Unknown = "Unknown", a))(C || {});
 class l extends Error {
   constructor(e, t, n) {
     super(t), this.type = e, this.originalError = n, Object.setPrototypeOf(this, l.prototype);
   }
 }
-class f {
+function f(a) {
+  const e = a?.trim();
+  if (e === "*") return "*";
+  if (!e)
+    throw new Error("Invalid origin URL");
+  return new URL(e).origin;
+}
+class p {
   constructor(e = {}) {
     this.instanceId = Math.random().toString(36).substring(2, 15), this.handlers = /* @__PURE__ */ new Map(), this.pendingCalls = /* @__PURE__ */ new Map(), this.messageHandler = null, this.isConnected = !1, this.connectionCallbacks = [];
-    const t = e.timeout ?? 5e3;
+    const t = e.timeout ?? 5e3, n = f(e.targetOrigin ?? "*");
     this.options = {
       timeout: t,
       connectTimeout: e.connectTimeout ?? t,
       callTimeout: e.callTimeout ?? t,
       isHost: e.isHost ?? !1,
-      targetOrigin: e.targetOrigin ?? "*",
+      targetOrigin: n,
       targetFrameId: e.targetFrameId,
       onError: e.onError
     }, this.handleMessage = this.handleMessage.bind(this), this.onError = e.onError, this.options.targetOrigin === "*" && console.warn(
@@ -91,12 +98,12 @@ class f {
       let h = null;
       s > 0 && (h = setTimeout(() => {
         this.pendingCalls.delete(r);
-        const C = new l(
+        const m = new l(
           "Timeout",
           `RPC call to '${e}' timed out after ${s}ms`
         );
         this.handleErrorOrReject(
-          C,
+          m,
           { event: e, data: t, defaultValue: o, timeout: s },
           c,
           d
@@ -160,6 +167,12 @@ class f {
   }
   async handleMessage(e) {
     if (!e.data?.type?.startsWith?.("rpc-")) return;
+    if (this.options.targetOrigin !== "*" && e.origin !== this.options.targetOrigin) {
+      console.warn(
+        `[RPC${this.options.isHost ? "-HOST" : "-CLIENT"}] Rejected message from origin '${e.origin}' (expected '${this.options.targetOrigin}')`
+      );
+      return;
+    }
     const t = e.data;
     if (console.debug(
       `[RPC${this.options.isHost ? "-HOST" : "-CLIENT"}] Received message:`,
@@ -324,10 +337,10 @@ class f {
     return this.instanceId;
   }
 }
-Object.assign(window, { RPCManager: f });
+Object.assign(window, { RPCManager: p });
 export {
   l as RPCError,
-  m as RPCErrorType,
-  f as RPCManager
+  C as RPCErrorType,
+  p as RPCManager
 };
 //# sourceMappingURL=rpc-manager.es.js.map
